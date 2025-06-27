@@ -1,6 +1,7 @@
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
+import { Row, Rows, Table } from 'react-native-table-component';
 
 
 
@@ -38,8 +39,21 @@ const parties = () => {
             }),
         ]).start();
     };
+    const renderRow = (
+        iconName: React.ComponentProps<typeof AntDesign>['name'],
+        label: string,
+        onPress?: () => void
+    ) => (
+        <TouchableOpacity
+            onPress={onPress}
+            style={{ alignItems: 'center', marginHorizontal: '2.1%' }}
+        >
+            <AntDesign name={iconName} size={20} color="white" />
+            <Text style={{ color: 'white', fontSize: 10 }}>{label}</Text>
+        </TouchableOpacity>
+    );
 
-    const handleParties = () => {
+    const handlePartiesPage = () => {
         router.replace('/parties');
     };
 
@@ -50,6 +64,13 @@ const parties = () => {
     const handleLogout = () => {
         router.replace('/login');
     };
+
+    
+
+
+    const [showMoreMenu, setShowMoreMenu] = useState(false);
+    const [showDropdown, setShowDropdown] = useState(false);
+
 
     const data = [
         {
@@ -70,51 +91,35 @@ const parties = () => {
         },
     ];
 
+    const tableHead = ['Ledger Name', 'Contact Name.', 'Party Type', 'Mobile Number', 'WhatsApp Number', 'Balance'];
+    const tableData = [
+        ['Akash', '9876543210', 'BBB', '9876543210', '9876543210', '₹12,000'],
+        ['Boww Booww', '9123456780', 'AAA', '9876543210', '9123456780', '₹5,000'],
+        ['XYZ Company', '9012345678', 'KKK', '9012345678', '9012345678', '₹22,500'],
+    ];
+
+
+    const [showPartiesMenu, setShowPartiesMenu] = useState(false);
+const [selectedPartyType, setSelectedPartyType] = useState(null);
+
+
     return (
 
         <SafeAreaProvider>
             <SafeAreaView style={{ flex: 1 }}>
 
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={toggleSidebar}>
-                        <AntDesign name="menuunfold" size={30} color="black" style={styles.icons} />
-                    </TouchableOpacity>
+                <View>
+                    <Text style={styles.header}>Parties</Text>
                 </View>
 
                 <View style={{ flex: 1, flexDirection: 'row', }}>
-                    <Animated.View style={[styles.sidebar, { width: animatedWidth }]}>
-                        <ScrollView>
-                            <Animated.Image
-                                style={[
-                                    styles.logo,
-                                    {
-                                        width: animatedImageSize,
-                                        height: animatedImageSize,
-                                    },
-                                ]}
-                                source={require('../assets/images/Digitalcloudies1.png')}
-                            />
 
-                            {renderRow('home', 'Dashboard', isCollapsed, handleDashboard)}
-                            {renderRow('addusergroup', 'Parties', isCollapsed, handleParties)}
-                            {renderRow('isv', 'Sales', isCollapsed)}
-                            {renderRow('car', 'Stock Transfer', isCollapsed)}
-                            {renderRow('shoppingcart', 'POS', isCollapsed)}
-                            {renderRow('bank', 'Cash & Bank', isCollapsed)}
-                            {renderRow('wallet', 'Expenses', isCollapsed)}
-                            {renderRow('barchart', 'Reports', isCollapsed)}
-                            {renderRow('laptop', 'Online Orders', isCollapsed)}
-                            {renderRow('rocket1', 'Website Setup', isCollapsed)}
-                            {renderRow('setting', 'Settings', isCollapsed)}
-                            {renderRow('logout', 'Logout', isCollapsed, handleLogout)}
-                        </ScrollView>
-                    </Animated.View>
 
                     <View style={styles.card}>
                         <View style={{ width: '100%', flexDirection: 'row', gap: 10 }}>
 
 
-                            <View style={{ width: '55%' }}><TextInput
+                            <View style={{ width: '60%' }}><TextInput
                                 style={styles.input}
                                 placeholder="Search here"
 
@@ -122,80 +127,142 @@ const parties = () => {
 
                             <View style={styles.PlusCreate}>
                                 <View ><AntDesign name="plus" color="white" size={20} /></View>
-                                <View><Text style={{ color: 'white', fontSize: 17 }}>Create</Text></View>
 
                             </View>
+
+                            {/* Excel,pdf,print */}
+
+                            <View style={{ width: '20%' }}>
+                                <TouchableOpacity
+                                    onPress={() => setShowDropdown(!showDropdown)}
+                                    style={styles.filterButton}
+                                >
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                                        
+                                        <AntDesign name="down" size={16} color="white" />
+                                    </View>
+                                </TouchableOpacity>
+
+                                {showDropdown && (
+                                    <View style={styles.dropdownContainer}>
+                                        <TouchableOpacity style={styles.dropdownCard}>
+                                            <MaterialCommunityIcons name="file-pdf-box" size={20} color={'white'} />
+                                            <Text style={styles.dropdownText}>PDF</Text>
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity style={styles.dropdownCard}>
+                                            <Feather name="printer" size={20} color={'white'} />
+                                            <Text style={styles.dropdownText}>Print</Text>
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity style={styles.dropdownCard}>
+                                            <Feather name="file-text" size={20} color={'white'} />
+                                            <Text style={styles.dropdownText}>Excel</Text>
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity style={styles.dropdownCard}>
+                                            <Feather name="share-2" size={20} color={'white'} />
+                                            <Text style={styles.dropdownText}>Share</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                            </View>
+
+
 
                         </View>
 
-                        {/* Excel,pdf,print */}
-
-                        <View style={{ width: '100%', flexDirection: 'row', }}>
-
-                            <View style={styles.Excel}>
-                                <View ><AntDesign name="pdffile1" color="white" size={17} /></View>
-                                <View><Text style={{ color: 'white', fontSize: 15 }}>Pdf</Text></View>
-                            </View>
-
-                            <View style={styles.Excel}>
-                                <View ><AntDesign name="printer" color="white" size={17} /></View>
-                                <View><Text style={{ color: 'white', fontSize: 15 }}>Print</Text></View>
-                            </View>
-
-                            <View style={styles.Excel}>
-                                <View ><AntDesign name="exclefile1" color="white" size={17} /></View>
-                                <View><Text style={{ color: 'white', fontSize: 15 }}>Excel</Text></View>
-                            </View>
-
-                            <View style={styles.Excel}>
-                                <View ><AntDesign name="sharealt" color="white" size={17} /></View>
-                                <View><Text style={{ color: 'white', fontSize: 15 }}>Share</Text></View>
-                            </View>
-
-                        </View>
 
                         {/* Table */}
 
-                        <View style={{ backgroundColor: '#f5f5f6', height: 170, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
-                            <View style={{ height: 150, margin: 10 }}>
-                                <ScrollView horizontal>
-                                    <View style={styles.table}>
-                                        {/* Header Row */}
-                                        <View style={[styles.table_row, styles.headerRow]}>
-                                            <Text style={[styles.cell, styles.table_header]}>Ledger Name</Text>
-                                            <Text style={[styles.cell, styles.table_header]}>Contact No</Text>
-                                            <Text style={[styles.cell, styles.table_header]}>Party Name</Text>
-                                            <Text style={[styles.cell, styles.table_header]}>Mobile</Text>
-                                            <Text style={[styles.cell, styles.table_header]}>WhatsApp</Text>
-                                            <Text style={[styles.cell, styles.table_header]}>Balance</Text>
-                                            <Text style={[styles.cell, styles.table_header]}>Actions</Text>
-                                        </View>
+                        <View style={styles.table}>
 
-                                        {/* Data Rows */}
-                                        {data.map((item, index) => (
-                                            <View key={index} style={styles.table_row}>
-                                                <Text style={styles.cell}>{item.ledger}</Text>
-                                                <Text style={styles.cell}>{item.contact}</Text>
-                                                <Text style={styles.cell}>{item.party}</Text>
-                                                <Text style={styles.cell}>{item.mobile}</Text>
-                                                <Text style={styles.cell}>{item.whatsapp}</Text>
-                                                <Text style={styles.cell}>{item.balance}</Text>
-                                                <View style={[styles.cell, styles.actionsCell]}>
-                                                    <TouchableOpacity style={styles.actionBtn}><Text></Text></TouchableOpacity>
-                                                    <TouchableOpacity style={styles.actionBtn}><Text></Text></TouchableOpacity>
-                                                    <TouchableOpacity style={styles.actionBtn}><Text></Text></TouchableOpacity>
-                                                    <TouchableOpacity style={styles.actionBtn}><Text></Text></TouchableOpacity>
-                                                </View>
-                                            </View>
-                                        ))}
-                                    </View>
-                                </ScrollView>
-                            </View>
+
+                            <ScrollView horizontal>
+
+                                <Table borderStyle={{ borderWidth: 1, borderColor: '#ccc' }}>
+                                    <Row data={tableHead} style={styles.head} textStyle={styles.headText} />
+                                    <Rows data={tableData} textStyle={styles.text} />
+                                </Table>
+                            </ScrollView>
+
+
                         </View>
+
+                        
+
+
 
                     </View>
 
                 </View>
+
+                
+
+                <View style={{ height: '6%', backgroundColor: '#001529', flexDirection: 'row', alignItems: 'center', gap: '5%' }}>
+                    {renderRow('home', 'Dashboard',handleDashboard)}
+                    {renderRow('addusergroup', 'Parties ^', () => setShowPartiesMenu(prev => !prev))}
+                    {renderRow('isv', 'Sales')}
+                    {renderRow('car', 'Stock Transfer')}
+                    {renderRow('bars', 'More', () => setShowMoreMenu(prev => !prev))}
+
+                </View>
+             {showPartiesMenu && (
+  <View
+    style={{
+      position: 'absolute',
+      bottom: 70, 
+      left: '15%', 
+      backgroundColor: '#001529',
+      padding: 10,
+      borderRadius: 5,
+      elevation: 5, 
+      shadowColor: '#000', 
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      zIndex: 99,
+    }}
+  >
+    <TouchableOpacity>
+      <Text style={{ paddingVertical: 8 ,color:'white'}}>Party</Text>
+    </TouchableOpacity>
+    <TouchableOpacity>
+      <Text style={{ paddingVertical: 8 ,color:'white'}}>Walk in Customers</Text>
+    </TouchableOpacity>
+    <TouchableOpacity >
+      <Text style={{ paddingVertical: 8 ,color:'white'}}>Suppliers</Text>
+    </TouchableOpacity>
+  </View>
+)}
+   
+                {showMoreMenu && (
+                    <View style={{
+                        position: 'absolute',
+                        bottom: '7%',
+                        right: '0%',
+                        backgroundColor: '#001529',
+                        borderRadius: 1,
+                        height: '54%',
+                        marginLeft: '1%',
+                        gap: '4%',
+                        padding: '2%',
+
+
+                    }}>
+                        {renderRow('shoppingcart', 'POS')}
+                        {renderRow('bank', 'Cash & Bank')}
+                        {renderRow('wallet', 'Expenses')}
+                        {renderRow('barchart', 'Reports')}
+                        {renderRow('laptop', 'Online Orders')}
+                        {renderRow('rocket1', 'Website Setup')}
+                        {renderRow('setting', 'Settings')}
+                        {renderRow('logout', 'Logout', handleLogout)}
+                        <TouchableOpacity onPress={() => setShowMoreMenu(false)} style={{ alignItems: 'center', marginTop: 50 }}>
+
+                        </TouchableOpacity>
+                    </View>
+                )}
 
 
 
@@ -224,21 +291,79 @@ const renderRow = (
 const styles = StyleSheet.create(
     {
 
+
+        dropdownContainer: {
+            position: 'absolute',
+            top: 50,
+            left: -50,
+            transform: [{ translateX: -100 }],
+            gap: 8,
+
+            paddingVertical: 8,
+            paddingHorizontal: 10,
+            zIndex: 999,
+            elevation: 5,
+            width: 200,
+        },
+        dropdownCard: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingVertical: 12,
+            paddingHorizontal: 16,
+            backgroundColor: '#3d96e9',
+            borderRadius: 10,
+            elevation: 4,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.15,
+            shadowRadius: 5,
+        },
+        dropdownText: {
+            fontSize: 16,
+            marginLeft: 10,
+            color: 'white',
+        },
+
         card: {
             backgroundColor: '#f5f5f5',
-            marginTop: 20,
+            
             borderRadius: 1,
             width: '98%',
             paddingHorizontal: 10,
             paddingVertical: 10,
             height: '100%',
             gap: 10
-        },
-        header: {
-            padding: 10,
-            alignItems: 'flex-start',
 
         },
+        header: {
+            padding: 22,
+            alignItems: 'flex-start',
+            fontSize:20,
+            fontWeight:'bold'
+        },
+
+        head: {
+            height: 50,
+
+            backgroundColor: '#e0f7fa'
+        },
+        text: {
+            height: 40,
+            width: 150,
+            color: 'black',
+            fontSize: 14,
+            fontWeight: 'bold',
+            textAlign: 'center',
+            textAlignVertical: 'center',
+        },
+
+        headText: {
+            margin: 6,
+            width: 150,
+            fontWeight: 'bold',
+            textAlign: 'center'
+        },
+
         icons: {
             marginLeft: 13,
             marginTop: 10,
@@ -268,11 +393,7 @@ const styles = StyleSheet.create(
             marginRight: 10,
             marginLeft: 5,
         },
-        text: {
-            color: 'white',
-            fontSize: 14,
-            fontWeight: 'bold',
-        },
+
         input: {
             borderColor: '#999',
             borderWidth: 1,
@@ -285,7 +406,7 @@ const styles = StyleSheet.create(
         PlusCreate: {
             flexDirection: 'row',
             backgroundColor: '#1f6d70',
-            width: '23%',
+            width: '20%',
             height: 40,
             borderColor: '#999',
             borderWidth: 1,
@@ -314,22 +435,15 @@ const styles = StyleSheet.create(
             padding: 16,
         },
         table: {
-            // minWidth: screenWidth,
+
             borderWidth: 1,
             borderColor: '#333',
             borderRadius: 5,
-            overflow: 'hidden',
+
 
 
         },
-        table_row: {
-            flexDirection: 'row',
-            width: 1000,
-            height: 50,
-            borderBottomWidth: 1,
-            borderColor: 'black',
-            backgroundColor: 'white'
-        },
+
         headerRow: {
             backgroundColor: '#96e8ff',
 
@@ -351,6 +465,47 @@ const styles = StyleSheet.create(
         },
         actionBtn: {
             paddingHorizontal: 4,
+        },
+        filterButton: {
+            backgroundColor: '#007bff',
+
+            borderRadius: 5,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: '1%',
+
+            width: '50%',
+            height: 40
+        },
+        filterButtonText: {
+            color: '#fff',
+            fontSize: 14,
+            fontWeight: 'bold',
+
+        },
+        buttonRow: {
+            flexDirection: 'column',
+            paddingHorizontal: '2%',
+
+            marginBottom: '3%',
+            justifyContent: 'center',
+            gap: '-1%',
+            backgroundColor: '#f5f5f5',
+            padding: '3%',
+            borderRadius: 1,
+            elevation: 1,
+            width: '100%',
+
+        },
+        date: {
+            padding: '3%',
+            borderRadius: 1,
+            width: '92%',
+            textAlign: 'center',
+            marginTop: 5,
+            backgroundColor: '#ffdead',
+            fontWeight: 'bold',
+            marginLeft: '4%'
         },
 
     }
