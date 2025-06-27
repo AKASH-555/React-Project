@@ -37,6 +37,10 @@ const App = () => {
     router.replace('/login');
   };
 
+    const handlePartiesPage = () => {
+    router.replace('/parties');
+  };
+
   const onPressDateInput = () => {
     setPickerMode('start');
   };
@@ -456,7 +460,7 @@ const [showMoreMenu, setShowMoreMenu] = useState(false);
           </ScrollView>
       <View style={{ height: '6%', backgroundColor: '#001529', flexDirection: 'row', alignItems: 'center' ,gap:'5%'}}>
   {renderRow('home', 'Dashboard')}
-  {renderRow('addusergroup', 'Parties')}
+  {renderRow('addusergroup', 'Parties',handlePartiesPage)}
   {renderRow('isv', 'Sales')}
   {renderRow('car', 'Stock Transfer')}
   {renderRow('bars', 'More', () => setShowMoreMenu(prev => !prev))}
