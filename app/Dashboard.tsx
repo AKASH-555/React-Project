@@ -25,39 +25,17 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 const App = () => {
   const animatedWidth = useRef(new Animated.Value(65)).current;
   const animatedImageSize = useRef(new Animated.Value(50)).current;
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  
   const router = useRouter();
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [pickerMode, setPickerMode] = useState<'start' | 'end' | null>(null);
 
-  const toggleSidebar = () => {
-    const newCollapsed = !isCollapsed;
-    setIsCollapsed(newCollapsed);
-
-    Animated.parallel([
-      Animated.timing(animatedWidth, {
-        toValue: newCollapsed ? 65 : 180,
-        duration: 300,
-        useNativeDriver: false,
-      }),
-      Animated.timing(animatedImageSize, {
-        toValue: newCollapsed ? 50 : 80,
-        duration: 300,
-        useNativeDriver: false,
-      }),
-    ]).start();
-  };
 
   const handleLogout = () => {
     router.replace('/login');
   };
-
-    const handleParties = () => {
-    router.replace('/parties');
-  };
-
 
   const onPressDateInput = () => {
     setPickerMode('start');
@@ -120,7 +98,7 @@ const yLabels = ['0.0', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', 
 const [selectedType, setSelectedType] = useState('Sales');
 
 const tableHead = ['Billno', 'PurchaseDate', 'Supplier', 'Party', 'Mobile Number', 'Amount', 'Payment Status', 'Action'];
-const widthArr = [80, 130, 120, 100, 120, 120, 120, 80];
+const widthArr = [60, 130, 120, 100, 120, 120, 120, 100];
 
 const salesData = [
   ['S-1', '01/06/25', 'ABC Corp', 'Client A', '1234567890', '1000', 'Paid', ''],
@@ -158,51 +136,52 @@ const tableWithTotal = [...currentData, totalRow];
 const stockalert = ['Product','Quantity','Quantity Alert','	StockAlert Date'];
 const stocks = [100,100,130,150];
 const stocksrow=[20,20,20,20];
-const stockdata=['ranjith','20','30','08/09/2024'];
+const stockdata=[  ["Ravi Kumar", "₹12,000", "Chennai"],
+  ["Anjali Mehra", "₹9,500"],
+  ["Suresh Patel", "₹8,200"],
+  ["Priya Das", "₹6,700"],
+  ["Amit Verma", "₹5,300"]];
 
-const topcustomerhead=['Customer Name','Total Amount'];
-const headsize = [150,150];
+  const stockalertdata = [
+  ['Apples', '10', '15', 'Kg'],
+  ['Bananas', '5', '10', 'Dozen'],
+  ['Oranges', '7', '8', 'Kg'],
+  ['Tomatoes', '3', '5', 'Kg'],
+  ['Potatoes', '12', '20', 'Kg'],
+];
+
+const topcustomerhead=['Customame','Total Amount'];
+const headsize = ['50%','50%'];
+const minRows = 5;
+const emptyRow = ["", "", ""];
+
+const paddedData = [
+  ...tableWithTotal,
+  ...Array(Math.max(0, minRows - tableWithTotal.length)).fill(emptyRow)
+];
+
+
+const [showMoreMenu, setShowMoreMenu] = useState(false);
+
+const getDynamicHeight = () => {
+  if (showDropdown && stockhistory) return 3570;
+  if (showDropdown) return 3150;
+  if (stockhistory) return 3350;
+  return 2920;
+};
+
+
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={toggleSidebar}>
-            <AntDesign name="menuunfold" size={30} color="black" style={styles.icons} />
-          </TouchableOpacity>
-        </View>
+       
 
-        <View style={styles.container}>
-          <Animated.View style={[styles.sidebar, { width: animatedWidth }]}>
-            <ScrollView>
-              <Animated.Image
-                style={[
-                  styles.logo,
-                  {
-                    width: animatedImageSize,
-                    height: animatedImageSize,
-                  },
-                ]}
-                source={require('../assets/images/Digitalcloudies1.png')}
-              />
 
-              {renderRow('home', 'Dashboard', isCollapsed)}
-              {renderRow('addusergroup', 'Parties', isCollapsed,handleParties)}
-              {renderRow('isv', 'Sales', isCollapsed)}
-              {renderRow('car', 'Stock Transfer', isCollapsed)}
-              {renderRow('shoppingcart', 'POS', isCollapsed)}
-              {renderRow('bank', 'Cash & Bank', isCollapsed)}
-              {renderRow('wallet', 'Expenses', isCollapsed)}
-              {renderRow('barchart', 'Reports', isCollapsed)}
-              {renderRow('laptop', 'Online Orders', isCollapsed)}
-              {renderRow('rocket1', 'Website Setup', isCollapsed)}
-              {renderRow('setting', 'Settings', isCollapsed)}
-              {renderRow('logout', 'Logout', isCollapsed, handleLogout)}
-            </ScrollView>
-          </Animated.View>
-
-          <ScrollView style={styles.dashboard} contentContainerStyle={{ paddingTop: 20 }}>
-            <Text style={{ fontSize: 18, fontWeight: 'bold', marginLeft: 10 }}>Dashboard</Text>
+        
+           <ScrollView >
+            <View style={{ height: getDynamicHeight() }}>
+            <Text style={{ fontSize: 18, fontWeight: 'bold', marginLeft: '10%' }}>Dashboard</Text>
 
             {/* Date Picker Card */}
             <View style={styles.card}>
@@ -238,9 +217,9 @@ const headsize = [150,150];
                   onPress={() => setShowDropdown(!showDropdown)}
                   style={styles.filterButton} 
                 >
-                  <View style={{ flexDirection:'row',gap:5 }}>
+                  <View style={{ flexDirection:'row',gap:'15%' }}>
                     <Text style={styles.filterButtonText}>Filter Date</Text>
-                  <AntDesign name="down" size={20} color="white" />
+                  <AntDesign name="down" size={16} color="white" />
                   </View>
                   
                 </TouchableOpacity>
@@ -254,7 +233,7 @@ const headsize = [150,150];
                           <Text style={styles.date}>This Year</Text>
                         </View>
                       )}
-                <View style={styles.verticalList}>
+              
                 <View style={styles.totalsales}>
                  <View style={styles.iconBox}>
                     <MaterialCommunityIcons name="chart-line" size={20} color="white" />
@@ -282,13 +261,10 @@ const headsize = [150,150];
                   </View>
                   <Text style={styles.totalsalesText}>Payment Received</Text>
                 </View>
-               </View>
-              
-                  <View style={styles.pichart}>
-                  <View style={{ flex :1, alignItems: 'center',marginLeft : -90,}}>
-                    <Text style={styles.pieTitle}>Top Selling Product</Text>
-                    <View style={{ marginLeft:90,width:-10,padding:-10,height:250 }}>
-                        <PieChart
+               
+             <View style={styles.pichart}>
+                  <Text style={styles.pieTitle}>Top Selling Product</Text>
+                  <PieChart
                           data={pieData}
                           donut
                           showText
@@ -297,66 +273,63 @@ const headsize = [150,150];
                           textColor="#000"
                           textSize={12}
                         />
-                    </View>
-                   <View style={styles.legendContainer}>
-                      {pieData.map((item, index) => (
+                        <View style={styles.legendContainer}>
+                           {pieData.map((item, index) => (
                         <View key={index} style={styles.legendItem}>
-                          <View style={[styles.legendColorBox, { backgroundColor: item.color }]} />
-                          <Text style={styles.legendText}>{item.text}</Text>
+                          
+                           <View style={[styles.legendColorBox, { backgroundColor: item.color }]} />
+                            
+                           <Text style={styles.legendText}>{item.text}</Text>
+                        
                         </View>
                       ))}
-                    </View>
-                  </View>
-                </View>
-               
+                        </View>
+                       
+             </View>
+
+
+                {/* </View> */}
+                
                 <View style={styles.verticalListcharbar}>
-                <View style={styles.barchart}>
-                  <View style={{ flex: 3, alignItems: 'center',padding:1,height:100,marginLeft:-9 }}>
-                    <Text style={styles.barTitle}>Sale&Purchase</Text>
-               
-                  <BarChart
-  data={[
-    { value: 10, label: '1/6/25', frontColor: '#ffa040', spacing: 0 },
-    { value: 20, label: '', frontColor: '#00C49F', spacing: 12 },
+                  <Text style={styles.barTitle}>Sale&Purchase</Text>
+                    <BarChart
+                      data={[
+                        { value: 10, label: '1/6/25', frontColor: '#ffa040', spacing: 0 },
+                        { value: 20, label: '', frontColor: '#00C49F', spacing: 12 },
 
-    { value: 30, label: '2/6/25', frontColor: '#ffa040', spacing: 0 },
-    { value: 25, label: '', frontColor: '#00C49F', spacing: 12 },
+                        { value: 30, label: '2/6/25', frontColor: '#ffa040', spacing: 0 },
+                        { value: 25, label: '', frontColor: '#00C49F', spacing: 12 },
 
-    { value: 20, label: '3/6/25', frontColor: '#ffa040', spacing: 0 },
-    { value: 15, label: '', frontColor: '#00C49F', spacing: 12 },
+                        { value: 20, label: '3/6/25', frontColor: '#ffa040', spacing: 0 },
+                        { value: 15, label: '', frontColor: '#00C49F', spacing: 12 },
 
-    { value: 50, label: '4/6/25', frontColor: '#ffa040', spacing: 0 },
-    { value: 35, label: '', frontColor: '#00C49F', spacing: 12 },
+                        { value: 50, label: '4/6/25', frontColor: '#ffa040', spacing: 0 },
+                        { value: 35, label: '', frontColor: '#00C49F', spacing: 12 },
 
-    { value: 40, label: '5/6/25', frontColor: '#ffa040', spacing: 0 },
-    { value: 45, label: '', frontColor: '#00C49F', spacing: 12 },
-  ]}
-  barWidth={12}
-  barBorderRadius={1}
-  spacing={20}
-  maxValue={60}
-  stepValue={10}
-  noOfSections={6}
-  xAxisLabelTextStyle={{ fontSize: 7, color: '#000', width: 40, textAlign: 'left' }}
-  yAxisTextStyle={{ fontSize: 9, color: '#333' }}
-  xAxisThickness={1}
-  yAxisThickness={1}
-  rotateLabel={false} // set to true if still cuts off
-/>
-
-
-
-                  </View>
-                  </View>
+                        { value: 40, label: '5/6/25', frontColor: '#ffa040', spacing: 0 },
+                        { value: 45, label: '', frontColor: '#00C49F', spacing: 12 },
+                      ]}
+                      barWidth={18}
+                      barBorderRadius={1}
+                      spacing={20}
+                      maxValue={60}
+                      stepValue={10}
+                      noOfSections={6}
+                      xAxisLabelTextStyle={{ fontSize: 10, color: '#000', width: 40, textAlign: 'left' }}
+                      yAxisTextStyle={{ fontSize: 9, color: '#333' }}
+                      xAxisThickness={1}
+                      yAxisThickness={1}
+                      rotateLabel={false} // set to true if still cuts off
+                    />
                 </View>
-                 <View style={{ marginTop:-90 }}>
+                
                   <TouchableOpacity
                   onPress={() => setstockhistory(!stockhistory)}
                   style={styles.stockButton} 
                 >
-                   <View style={{ flexDirection:'row',gap:5 }}>
+                   <View style={{ flexDirection:'row',gap:'3%' }}>
                       <Text style={styles.filterButtonText}>Recent Stock History</Text>
-                    <AntDesign name="down" size={20} color="white" />
+                    <AntDesign name="down" size={18} color="white" />
                    </View>
                   
                   </TouchableOpacity>
@@ -370,27 +343,28 @@ const headsize = [150,150];
                           
                         </View>
                       )}
-                 </View>
-                 <View style={{ backgroundColor:'white',marginTop:50,width:'100%' }}>
-                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', marginVertical: 10 }}>
+               
+                 <View style={{ backgroundColor:'white',marginTop:'1%',width:'102%',marginBottom:'3%',height:'10%' }}>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', marginVertical: '1%' }}>
                       {['Sales', 'Purchase', 'Purchase Return / Dr. Note', 'Sales Return / Cr. Note'].map(type => (
                         <TouchableOpacity
                           key={type}
                           onPress={() => setSelectedType(type)}
                           style={{
                             backgroundColor: selectedType === type ? '#ff4500' : '#e0ffff',
-                            paddingVertical: 8,
-                            paddingHorizontal: 12,
-                            borderRadius: 6,
-                            marginVertical: 4,
+                            paddingVertical: '2%',
+                            paddingHorizontal: '10%',
+                            borderRadius: '5%',
+                            marginVertical: '2%',
                           }}>
                           <Text style={{ color: selectedType === type ? '#fff' : '#000' }}>{type}</Text>
                         </TouchableOpacity>
                       ))}
                    
                  </View>
-                  <ScrollView horizontal>
-                          <View style={{ padding: 10, paddingTop: 100, backgroundColor: "#fff", marginTop: -100 }}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={true} >
+
+                          <View style={{ padding: '25%', paddingTop: '20%', backgroundColor: "#fff", marginTop: '-15%',paddingHorizontal:'-1%',width:'100%'}}>
                            <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }}>
                             <Row
                               data={tableHead}
@@ -407,25 +381,26 @@ const headsize = [150,150];
                         </View> 
                       </ScrollView>
                       </View> 
-                      <View style={styles.payments}>
-                <View style={styles.paymentchart}>
-                  <View pointerEvents="none" style={{ flex: 1, alignItems: 'center',paddingRight: 30,margin:0,height:100,marginRight:-1 }}>
-                    <Text style={styles.barTitle}>Payments</Text>
-               <View style = {{ marginHorizontal:20 ,width:250}}>
+                    
+              
+                 
+ <View  style={{  alignItems: 'center',backgroundColor: 'white',paddingRight: '14%',width:'102%',height:'7%',marginBottom:'90%',marginRight:'10%' }}>
+                    <Text style={styles.barTitlepayment}>Payments</Text>
+                     <View style = {{ marginHorizontal:'-30%'}}>
 
                
                     <LineChart
                         data={data1}
                         data2={data2}
-                        width={220}
-                        height={180}
+                        width={250}
+                        height={200}
                         maxValue={100}
                         stepValue={10}
                         noOfSections={5}
                         thickness={2}
                         color="#ffa500"            // Line 1 color
                         color2="#00C49F"           // Line 2 color
-                        yAxisTextStyle={{ fontSize: 8, color: 'grey' }}
+                        yAxisTextStyle={{ fontSize: 10, color: 'grey' }}
                         xAxisLabelTextStyle={{ fontSize: 1 }}
                         xAxisThickness={1}
                         yAxisThickness={1}
@@ -442,62 +417,107 @@ const headsize = [150,150];
 
 
                       </View>
-
-                  </View>
-                  </View>
-                </View>
+                    </View>
                 
-                <View style={{ backgroundColor:'white',marginTop:-50,height:350 }}>
-                  <Text style={{ marginTop:40,fontWeight:'bold',marginHorizontal:20 }}>Stock Alert</Text>
+                
+                
+                <View style={{ backgroundColor:'white',marginTop:'-85%',height:'8%',width:'102%',marginBottom:'5%' }}>
+                  <Text style={{ marginTop:'4%',fontWeight:'bold',marginHorizontal:'5%' }}>Stock Alert</Text>
                   <ScrollView horizontal>
-                          <View style={{ padding: 10, paddingTop: 100, backgroundColor: "#fff", marginTop: -60 }}>
+                          <View style={{ padding: '-1%', paddingTop: '15%', backgroundColor: "#fff", marginTop: '-10%' }}>
                           
                           <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }}>
-                            <Row
-                              data={stockalert}
-                              widthArr={stocks}
-                              style={styles.head}
-                              textStyle={styles.tabletext}
-                            />
-                            <Rows
-                              data={tableWithTotal}
-                              widthArr={stocks}
-                              height={stocksrow}
-                              textStyle={styles.tabletext}
-                            />
-                          </Table>
+                              <Row
+                                data={stockalert}
+                                widthArr={stocks}
+                                style={styles.head}
+                                textStyle={styles.tabletext}
+                              />
+                              <Rows
+                                data={stockalertdata}
+                                widthArr={stocks}
+                                height={stocksrow}
+                                textStyle={styles.tabletext}
+                              />
+                            </Table>
+
                         </View> 
+                       
                       </ScrollView>
                 </View> 
                
                 
-                  <View style={{ padding: 1, paddingTop: 100, backgroundColor: "#fff", height:350,marginTop:60, paddingHorizontal: 10,width:288,marginHorizontal:1}}>
-                           <Text style={{ marginTop:-60,fontWeight:'bold',marginHorizontal:10 }}>Top Customers</Text>
-                           <View style={{ marginTop:30 }}>
+                  <View style={{ padding:'1%' , paddingTop: '20%', backgroundColor: 'white', height:'8%',marginTop:'-1%', paddingHorizontal: '4%',width:'102%',marginHorizontal:'0.5%'}}>
+                           <Text style={{ marginTop:'-10%',fontWeight:'bold',marginHorizontal:'2%' }}>Top Customers</Text>
+                           <View style={{ marginTop:'1%' }}>
                              <ScrollView horizontal>
-                            <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9',margintop:10 }}>
-                            <Row
-                              data={topcustomerhead}
-                              widthArr={headsize}
-                              style={styles.head}
-                              textStyle={styles.tabletext}
-                            />
-                            <Rows
-                              data={tableWithTotal}
-                              widthArr={headsize}
-                              height={stocksrow}
-                              textStyle={styles.tabletext}
-                            />
-                          </Table>
-                             </ScrollView>
+                           <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9', marginTop: 10, marginLeft: '10%',paddinghorizontal:'20%' }}>
+                          <Row
+                            data={topcustomerhead}
+                            widthArr={headsize}
+                            style={styles.head}
+                            textStyle={styles.tabletext}
+                          />
+                          <Rows
+                            data={stockdata}
+                            widthArr={headsize}
+                            height={stocksrow}
+                            textStyle={styles.tabletext}
+                          />
+                        </Table>
 
+                        </ScrollView>
+                                                    
+                        </View>
                           </View>
-                        </View> 
+                       
                     
+                        
                         </View>
              
+          
+          </View>
           </ScrollView>
-        </View>
+      
+         
+      <View style={{ height: '6%', backgroundColor: '#001529',width:'100%',marginRight:1, flexDirection: 'row',marginTop:'0%',alignItems: 'center' ,gap:'6%'}}>
+  {renderRow('home', 'Dashboard')}
+  {renderRow('addusergroup', 'Parties')}
+  {renderRow('isv', 'Sales')}
+  {renderRow('car', 'Stock Transfer')}
+  {renderRow('bars', 'More', () => setShowMoreMenu(prev => !prev))}
+
+</View>
+{showMoreMenu && (
+  <View style={{
+    position: 'absolute',
+    bottom: 60.5,
+    right: '0%',
+    backgroundColor: '#001529',
+    borderRadius: 1,
+    height:'54%',
+    marginLeft:'3%',
+    gap:'3.5%',
+    padding:'2%',
+ 
+    
+  }}>
+    {renderRow('shoppingcart', 'POS')}
+    {renderRow('bank', 'Cash & Bank')}
+    {renderRow('wallet', 'Expenses')}
+    {renderRow('barchart', 'Reports')}
+    {renderRow('laptop', 'Online Orders')}
+    {renderRow('rocket1', 'Website Setup')}
+    {renderRow('setting', 'Settings')}
+    {renderRow('logout', 'Logout', handleLogout)}
+    <TouchableOpacity onPress={() => setShowMoreMenu(false)} style={{ alignItems: 'center', marginTop: 50 }}>
+      
+    </TouchableOpacity>
+  </View>
+)}
+
+
+       
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -506,16 +526,18 @@ const headsize = [150,150];
 const renderRow = (
   iconName: React.ComponentProps<typeof AntDesign>['name'],
   label: string,
-  isCollapsed: boolean,
   onPress?: () => void
 ) => (
-  <TouchableOpacity onPress={onPress}>
-    <View style={styles.row}>
-      <AntDesign name={iconName} size={22} color="white" style={styles.icon} />
-      {!isCollapsed && <Text style={styles.text}>{label}</Text>}
-    </View>
+  <TouchableOpacity
+    onPress={onPress}
+    style={{ alignItems: 'center', marginHorizontal: '2.1%' }}
+  >
+    <AntDesign name={iconName} size={22} color="white" />
+    <Text style={{ color: 'white', fontSize: 10 }}>{label}</Text>
   </TouchableOpacity>
 );
+
+
 const pieData = [
   {
     name: 'Sales',
@@ -549,7 +571,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
   },
   sidebar: {
     backgroundColor: '#001529',
@@ -570,13 +592,14 @@ const styles = StyleSheet.create({
   },
   row: {
     height: 50,
-    flexDirection: 'row',
+     flexDirection: 'row', 
     alignItems: 'center',
     paddingLeft: 10,
+    
   },
   icon: {
-    marginRight: 10,
-    marginLeft: 5,
+    marginRight: 5,
+    
   },
   text: {
     color: 'white',
@@ -584,35 +607,39 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   dashboard: {
-    flex: 1,
-    backgroundColor: '#f0f0f0',
+    // flex: 1,
+     
+
   },
   card: {
     backgroundColor: '#f5f5f5',
-    marginTop: 20,
+    marginTop: '7%',
     borderRadius: 1,
     width: '98%',
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    height:'100%',
-    gap:10
+    paddingHorizontal: '3%',
+    paddingVertical: '60%',
+    height:5000,
+    gap:'-10%',
+    marginBottom:'10%'
+   // marginVertical:'-10%'
   },
   dateInput: {
-    padding: 10,
+    padding: '4%',
     backgroundColor: 'white',
     borderRadius: 1,
     fontSize: 13,
-    width: '100%',
+    width: '102%',
+    marginTop:'-55%'
   },
   date: {
-    padding: 10,
+    padding: '3%',
     borderRadius: 1,
     width: '92%',
     textAlign: 'center',
     marginTop: 5,
     backgroundColor: '#ffdead',
     fontWeight: 'bold',
-    marginLeft:10
+    marginLeft:'4%'
   },
   
   recenthistory:{
@@ -620,12 +647,14 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     width: '94%',
     textAlign: 'left',
-    marginTop: 20,
+    marginTop: '-15%',
     backgroundColor: '#e6f2ed',
     fontWeight: 'bold',
     color:'grey',
     height:100,
-    marginLeft:8
+    marginLeft:8,
+   
+    
     
   },
   recenthistory1:{
@@ -633,64 +662,71 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     width: '94%',
     textAlign: 'left',
-    marginTop: 20,
+    marginTop: 5,
     backgroundColor: '#ffefed',
     fontWeight: 'bold',
     color:'grey',
     height:100,
-    marginLeft:8
+    marginLeft:8,
+    marginBottom:'16%'
   },
   buttonRow: {
     flexDirection: 'column',
-    paddingHorizontal: 2,
-    marginTop: -15,
+    paddingHorizontal: '2%',
+    marginTop: '-10%',
+    marginBottom:'3%',
     justifyContent: 'center',
-    gap: -10,
+    gap: '-1%',
     backgroundColor: '#f5f5f5',
-    padding: 10,
+    padding: '3%',
     borderRadius: 1,
     elevation: 1,
-    width:'100%'
+    width:'102%',
+    
   },
   stockhistorybuttton: {
     flexDirection: 'column',
-    paddingHorizontal: 2,
-    marginTop: 5,
+    paddingHorizontal: '-2%',
+    marginTop: '1%',
     justifyContent: 'center',
-    gap: -10,
+    gap: '1%',
     backgroundColor: '#f5f5f5',
-    padding: 10,
+    height:500,
     borderRadius: 1,
-    elevation: 1,
+  //  elevation: 1,
     width:'100%',
+    paddingVertical:'80%',
+    marginBlock:'-35%'
   },
   filterButton: {
   backgroundColor: '#007bff',    
-  paddingVertical: 10,
-  paddingHorizontal: 20,
-  borderRadius: 8,
+  paddingVertical: '-1%',
+  paddingHorizontal: '10%',
+  borderRadius: 5,
   alignItems: 'center',
   justifyContent: 'center',
-  marginBottom: 10,
-  marginTop:30,
-  width:'70%'
+  marginBottom: '10%',
+  marginTop:'-37%',
+  width:'50%',
+  height:'1%'
 },
 stockButton: {
   backgroundColor: '#007bff',    
-  paddingVertical: 10,
-  paddingHorizontal: 20,
+  paddingVertical: '5%',
+  paddingHorizontal: '5%',
   borderRadius: 8,
   alignItems: 'center',
   justifyContent: 'center',
-  marginBottom: 10,
-  marginTop:30,
-  width:'100%'
+  marginBottom: '1%',
+  marginTop:'-12%',
+  width:'102%'
 },
 
 filterButtonText: {
   color: '#fff',
-  fontSize: 12,
+  fontSize: 14,
   fontWeight: 'bold',
+  marginTop:'-1%'
 },
   clickText: {
     fontSize: 18,
@@ -698,10 +734,13 @@ filterButtonText: {
     marginTop: 10,
   },
   verticalList: {
-    flexDirection: 'column',
-    paddingHorizontal: 5,
-    marginTop: 20,
-    gap: 10,
+    flexDirection: 'row',
+    flexWrap:'wrap',
+    paddingHorizontal: '-1%',
+    marginTop: '-3%',
+    gap: '2%',
+    width:'98%',
+    height:'30%'
   },
   verticalListchar:{
     flexDirection: 'row',
@@ -709,22 +748,35 @@ filterButtonText: {
     marginTop: 50,
     gap: 10,
     height:'13%',
-    width:10,
-    
+    width:'3.72%'    
   },
   verticalListcharbar:{
-     flexDirection: 'row',
-    paddingHorizontal: 5,
-    marginTop: 10,
-    gap: 10,
-    height:440
+      flexDirection: 'column',
+     paddingHorizontal: '-1%',
+     marginTop: '3%',
+     gap: '1%',
+     height:'7%',
+     marginBottom:'15%',
+     width:'102%',
+     backgroundColor:'white',
+     alignItems: 'center',
+     padding:'1%'
   },
    payments:{
      flexDirection: 'row',
-    paddingHorizontal: 5,
-    marginTop: 60,
-    gap: 10,
-    height:440
+    paddingHorizontal: '10%',
+    marginTop: '-1%',
+    gap: '1%',
+    height:'20%',
+    marginBottom:'40%',
+    width:'100%',
+
+    alignItems: 'flex-start',
+     paddingVertical: '1%',
+     marginHorizontal:-1,
+    // backgroundColor: 'white',
+
+    
   },
   table:{
     flexDirection: 'column',
@@ -737,55 +789,75 @@ filterButtonText: {
   totalsales: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 8,
+    padding: '6%',
     backgroundColor: 'white',
     borderRadius: 1,
-    height: 60,
-    gap: 10,
+    height: '2%',
+    gap: '5%',
     width:'102%',
-    marginRight:10
+    marginRight:'1%',
+    marginTop:'1%',
+    marginBottom:'1%'
   },
   totalsalesIcon: {
-    marginRight: 10,
+    marginRight: '10%',
   },
   totalsalesText: {
     fontSize: 14,
     color: 'grey',
+    marginTop:'-1%'
   },
-   pichart: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    paddingVertical: 50,
-    backgroundColor: 'white',
-    borderRadius: 1,
-    height: 350,
-    gap: 10,
-    width:'98%'
-  },
+  //  pichart: {
+  //   flexDirection: 'row',
+  //   alignItems: 'flex-start',
+  //   paddingVertical: '50%',
+  //   backgroundColor: 'white',
+  //   borderRadius: 1,
+  //   width:'102%',
+  //   marginTop:'1%',
+  //   flex: 1,
+  //   height:'10%',
+  //   // alignItems: 'center',
+  //   marginRight:'20%',
+  //   marginBottom:'10%'
+  // },
+    pichart: {
+  //  flex: 1, 
+   alignItems: 'center',
+   marginRight:'20%',
+   marginTop:'2%',
+   width:'102%',
+   backgroundColor: 'white',
+   
+  // marginBottom:'100%',
+ 
+   paddingVertical: '1%'
+   },
   barchart:{
     
     flexDirection: 'row',
     alignItems: 'flex-start',
-    paddingVertical: 40,
-    
+    paddingVertical: '15%',
     backgroundColor: 'white',
     borderRadius: 1,
-    height: 330,
-    gap: 10,
-    width:'100%'
-    
-  },
+    paddingHorizontal: '-1%',
+    marginTop: '4%',
+    gap: '1%',
+    height:'10%',
+    marginBottom:'10%',
+    width:'102%'
+  
+   },
    paymentchart:{
     
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    paddingVertical: 40,
-    marginHorizontal:-5,
-    backgroundColor: 'white',
-    borderRadius: 1,
-    height: 320,
-    gap: 10,
-    width:'105%',
+    // flexDirection: 'row',
+    // alignItems: 'flex-start',
+    // paddingVertical: '10%',
+    // marginHorizontal:-5,
+    // backgroundColor: 'white',
+    // borderRadius: 1,
+    // height: '100%',
+    
     
   },
   
@@ -803,49 +875,57 @@ filterButtonText: {
     alignItems:'flex-start',
     fontSize: 13,
     fontWeight: 'bold',
-    marginBottom: 20,
-    marginTop:-20,
-    
+    marginBottom: '12%',
+    marginTop:'5%',
     color: '#333',
-    paddingLeft:15
+    paddingRight:'50%'
   },
   barTitle: {
     alignItems:'flex-start',
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: 'bold',
-    marginBottom: 20,
-    marginTop:-20,
-    marginRight:100,
+    marginBottom: '5%',
+    marginTop:'5%',
+    marginRight:'50%',
     color: '#333',
-    paddingLeft:15
-  },
+   },
+   barTitlepayment:{
+     alignItems:'flex-start',
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: '5%',
+    marginTop:'5%',
+    marginRight:'50%',
+    color: '#333',
+   },
 legendContainer: {
-  flexDirection: 'row',
-  alignItems: 'flex-start',
-  marginTop: -50,
-  width: '100%',
-  paddingLeft: 50,
-  gap:1,
-  flexWrap: 'wrap'
+   flexDirection: 'row',
+   alignItems: 'flex-start',
+   marginTop: '5%',
+   width: '100%',
+   paddingLeft: '30%',
+   gap:'1%',
+   height:'2%',
+   flexWrap: 'wrap',
+   paddingVertical:'1%'
 },
 
 legendItem: {
   flexDirection: 'row',
   alignItems: 'center',
-  marginTop: 1,
-  marginLeft:65
+  marginTop: '5%',
+  marginRight:'50%'
 },
 
 legendColorBox: {
-  width: 10,
+  width: '10%',
   height: 12,
-  marginRight: 8,
+  marginRight: '10%',
   borderRadius: 2,
 },
 
 legendText: {
-  fontSize: 13,
-  color: '#555',
+ 
 },
   head: { 
     height: 70, 

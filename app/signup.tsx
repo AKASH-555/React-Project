@@ -1,15 +1,14 @@
+import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-  Image,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Image,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const LoginScreen = () => {
@@ -57,8 +56,8 @@ const LoginScreen = () => {
 
     setResetMessage(`Password reset instructions sent to ${email}`);
   };
-  const signup=()=>{
-    router.push('/signup')
+  const login=()=>{
+    router.push('/login')
   };
 
   return (
@@ -72,13 +71,13 @@ const LoginScreen = () => {
       //  ../../../../Reactnative/my new project/MyApp/assets/images/Digitalcloudies1.png
         source={require('../assets/images/Digitalcloudies1.png')}
       />
-      <Text style={styles.title}>Welcome Back</Text>
-      <Text style={styles.subtitle}>Please login to your account</Text>
+      <Text style={styles.title}>CREATE YOUR PLACE</Text>
+      <Text style={styles.subtitle}>Please signup to your account</Text>
 
       <View style={styles.login}>
 
         <View style={styles.inputContainer}>
-           <AntDesign name="user" size={20} color="grey" style={styles.icon} />
+           <AntDesign name="mail" size={20} color="grey" style={styles.icon} />
         <TextInput
           style={styles.textinput}
           onChangeText={(text) => {
@@ -87,7 +86,7 @@ const LoginScreen = () => {
             setResetMessage('');
           }}
           value={email}
-          placeholder="User Name"
+          placeholder="Email"
         
         />
         </View>
@@ -107,7 +106,7 @@ const LoginScreen = () => {
       />
       <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
          <AntDesign
-          name={showPassword ? 'eye' : 'eyeo'} // 👁 eye / 👁️‍🗨️ eyeo
+          name={showPassword ? 'eye' : 'eyeo'} 
           size={20}
           color="grey"
           style={styles.icon}
@@ -116,13 +115,13 @@ const LoginScreen = () => {
     </View>
         {passwordError !== '' && <Text style={styles.error}>{passwordError}</Text>}
 
-         <TouchableOpacity style={styles.forgotpsw} onPress={handleResetPassword}>
+         {/* <TouchableOpacity style={styles.forgotpsw} onPress={handleResetPassword}>
           <Text style={{ fontSize: 14,color:'grey' }}>Forgot Password?</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
 
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Login</Text>
+          <Text style={styles.buttonText}>Signup</Text>
         </TouchableOpacity>
 
         {/* <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
@@ -156,10 +155,10 @@ const LoginScreen = () => {
           <Text style={[styles.message, { color: 'green' }]}>{resetMessage}</Text>
         )} */}
            <View style={{ flexDirection:'row',marginTop:'5%',gap:1, }}>
-                   <Text style={{ color:'grey',marginHorizontal:'1%',textAlign:'center' }}>Don't have any account?  </Text>
-            <TouchableOpacity onPress={signup}>
+                   <Text style={{ color:'grey',marginHorizontal:'1%',textAlign:'center' }}>already have an account?  </Text>
+            <TouchableOpacity onPress={login}>
               <Text style={{ color:'black',fontWeight:'bold',marginHorizontal:'1%',marginTop:'2%', }}>
-              Sign Up
+              login
               </Text>
               </TouchableOpacity>
            </View>
@@ -188,13 +187,13 @@ const styles = StyleSheet.create({
   title: {
     margin: '1%',
     marginLeft:'10%',
-    width: '50%',
+    width: '70%',
     fontWeight: 'bold',
     fontSize: 24,
   },
   subtitle: {
     marginTop: '1%',
-    width: '50%',
+    width: '55%',
     marginLeft:'10%',
     fontSize: 14,
     color: '#555',
